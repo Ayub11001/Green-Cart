@@ -3,8 +3,6 @@ import { NavLink } from 'react-router-dom';
 import {assets} from '../assets/assets.js';
 import { useAppContext } from '../context/AppContext.jsx';
 
-
-
 const Navbar = () => {
     const [open, setOpen] = useState(false);
     const {user, setUser, showUserLogin, setShowUserLogin, navigate} = useAppContext(); 
@@ -49,7 +47,9 @@ const Navbar = () => {
                     !user ?
                     (<button 
                         className="cursor-pointer px-8 py-2 bg-primary hover:bg-primary-dull transition text-white rounded-full"
-                        onClick={() => setShowUserLogin(true)}
+                        onClick={() => {
+                            setShowUserLogin(true);
+                        }}
                     >
                         Login
                     </button>) :
