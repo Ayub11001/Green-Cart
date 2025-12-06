@@ -3,6 +3,7 @@ import {assets} from '../assets/assets.js';
 import {Link} from 'react-router-dom';
 const MainBanner = () => {
   return (
+    
     <div className='relative'>
         <img 
             src={assets.main_banner_bg} 
@@ -37,6 +38,7 @@ const MainBanner = () => {
         </div>
         
     </div>
+
   )
 }
 

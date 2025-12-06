@@ -1,5 +1,5 @@
 import React from 'react'
-import { assets, categories } from '../assets/assets'
+import { assets, categories } from '../assets/assets.js'
 import { useAppContext } from '../context/AppContext.jsx';
 
 
@@ -14,7 +14,7 @@ const Categories = () => {
             {
                 categories.map((category, index) => (
                     <div 
-                        key={index}  
+                        key={index} // for efficiency only!!!!!!!!!!!!!! 
                         className='group cursor-pointer py-5 px-3 gap-2 rounded-lg flex flex-col justify-center items-center'
                         style={{backgroundColor: category.bgColor}}
                         onClick={() => {
