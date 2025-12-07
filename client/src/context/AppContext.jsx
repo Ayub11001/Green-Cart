@@ -8,11 +8,12 @@ const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
     const navigate = useNavigate();
-    const [user, setUser] = useState(true);
+    const [user, setUser] = useState(null);
     const [isSeller, setIsSeller] = useState(false);
     const [showUserLogin, setShowUserLogin] = useState(false);
     const [products, setProducts] = useState([]);
     const [cartItems, setCartItems] = useState({});
+    const [searchQuery, setSearchQuery] = useState({});
 
     const currency = import.meta.env.VITE_CURRENCY || '₹';
 
@@ -72,6 +73,8 @@ const AppContextProvider = ({ children }) => {
         removeFromCart,
         updateCartItem,
         cartItems,
+        searchQuery,
+        setSearchQuery,
     };
 
     return <AppContext.Provider value = {value}>
