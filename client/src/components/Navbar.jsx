@@ -12,7 +12,8 @@ const Navbar = () => {
         setShowUserLogin,
         navigate,
         searchQuery,
-        setSearchQuery
+        setSearchQuery,
+        getCartCount,
     } = useAppContext(); 
 
     const logout = async () => {
@@ -64,7 +65,7 @@ const Navbar = () => {
                         alt=""
                         className = { 'w-6 opacity-80' }
                     />
-                    <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">3</button>
+                    <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">{getCartCount()}</button>
                 </div>
 
                 {
@@ -103,15 +104,27 @@ const Navbar = () => {
 
         {/* Mobile Menu Button */}
         
-            <button onClick={() => open ? setOpen(false) : setOpen(true)} aria-label="Menu" className="sm:hidden">
-                <img src={assets.menu_icon} alt="menu-icon" />
-            </button>
+            <div className='flex items-center gap-6 sm:hidden'>
+                
+                <div className="relative cursor-pointer" onClick={() => navigate('/cart')}>
+                    <img 
+                        src={assets.cart_icon} 
+                        alt=""
+                        className = { 'w-6 opacity-80' }
+                    />
+                    <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">{getCartCount()}</button>
+                </div>
+
+                <button onClick={() => open ? setOpen(false) : setOpen(true)} aria-label="Menu" className="sm:hidden">
+                    <img src={assets.menu_icon} alt="menu-icon" />
+                </button>
+            </div>
 
             {/* Mobile Menu */}
             {
                 open && (<div className={`${open ? 'flex' : 'hidden'} absolute z-50 top-[60px] left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden`}>
                     <NavLink to = {'/'} onClick = { () => setOpen(false) }>Home</NavLink>
-                    <NavLink to = {"/contacts"} onClick = { () => setOpen(false) }>All Products</NavLink>
+                    <NavLink to = {"/products"} onClick = { () => setOpen(false) }>All Products</NavLink>
                 {user && <NavLink to = {'/my-orders'} onClick = { () => setOpen(false) }>My Orders</NavLink>}
                 <NavLink to = '/' onClick= { () => setOpen(false) }>Contact</NavLink>
                 
