@@ -12,32 +12,32 @@ import ProductDetails from './pages/ProductDetails.jsx';
 import CartPage from './pages/CartPage.jsx';
 import AddAddressPage from './pages/AddAddressPage.jsx';
 import MyOrders from './pages/MyOrders.jsx';
+import SellerLogin from './components/seller/SellerLogin.jsx';
 
 const App = () => {
-  const { showUserLogin } = useAppContext();
+  const { showUserLogin, isSeller } = useAppContext();
   const isSellerPath = useLocation().pathname.includes('/seller');
   return (
     <div>
-      <Navbar></Navbar>
+      {isSellerPath ? null : <Navbar/>}
+      {showUserLogin ? <Login/> : null}
       <Toaster/>
-      {
-        isSellerPath ? (<>Seller</>) : (
-          <div className = {`px-6 md:px-16 lg:px-24 xl:px-32`}>
-            <Routes>
-              <Route path='/' element = {<Home/>}/>
-              <Route path='/products' element={<AllProducts/>}/>
-              <Route path='/products/:category' element={<ProductsCategory/>}/>
-              <Route path='/products/:category/:id' element={<ProductDetails/>}/>
-              <Route path='/cart' element = {<CartPage/>}/>
-              <Route path='/add-address' element = {<AddAddressPage/>}/>
-              <Route path='/my-orders' element = {<MyOrders/>}/>
-            </Routes>
-          </div>
-        )
-      }
-      {
-        showUserLogin ? <Login/> : null
-      }
+     
+      <div className = {`${isSellerPath ? '' : 'px-6 md:px-16 lg:px-24 xl:px-32'}`}>
+        <Routes>
+          <Route path='/' element = {<Home/>}/>
+          <Route path='/products' element={<AllProducts/>}/>
+          <Route path='/products/:category' element={<ProductsCategory/>}/>
+          <Route path='/products/:category/:id' element={<ProductDetails/>}/>
+          <Route path='/cart' element = {<CartPage/>}/>
+          <Route path='/add-address' element = {<AddAddressPage/>}/>
+          <Route path='/my-orders' element = {<MyOrders/>}/>
+          <Route path='/seller' element={isSeller ? null : <SellerLogin/>}>
+
+          </Route>
+        </Routes>
+      </div>
+    
       <Footer></Footer>
     </div>
   )
