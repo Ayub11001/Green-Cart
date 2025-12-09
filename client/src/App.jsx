@@ -10,6 +10,7 @@ import AllProducts from './pages/AllProducts.jsx';
 import ProductsCategory from './pages/ProductsCategory.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
 import CartPage from './pages/CartPage.jsx';
+import AddAddressPage from './pages/AddAddressPage.jsx';
 
 const App = () => {
   const { showUserLogin } = useAppContext();
@@ -27,6 +28,7 @@ const App = () => {
               <Route path='/products/:category' element={<ProductsCategory/>}/>
               <Route path='/products/:category/:id' element={<ProductDetails/>}/>
               <Route path='/cart' element = {<CartPage/>}/>
+              <Route path='/add-address' element = {<AddAddressPage/>}/>
             </Routes>
           </div>
         )
