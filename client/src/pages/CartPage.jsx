@@ -15,7 +15,7 @@ const CartPage = () => {
         cartItems,
         removeFromCart,
         getCartCount,
-        updateCartItems,
+        updateCartItem,
         navigate,
         getCartAmount,
     } = useAppContext();
@@ -76,14 +76,24 @@ const CartPage = () => {
                                         <p>Qty:</p>
                                         <select 
                                         onChange={
-                                            (e) => updateCartItems(product._id, Number(e.target.value))
+                                            (e) => {updateCartItem(product._id, Number(e.target.value))}
                                         }
                                         value={cartItems[product._id]}
                                         className='outline-none'>
                                             {Array(
                                                 cartItems[product._id] > 9 ? 
                                                 cartItems[product._id] : 
-                                                10
+                                                9
+                                            ).fill('')
+                                            .map(
+                                                (_, index) =>(
+                                                    <option 
+                                                    key={index} 
+                                                    value={index + 1}
+                                                    >
+                                                        {index + 1}
+                                                    </option>
+                                                )
                                             )}
                                         </select>
                                     </div>
