@@ -44,7 +44,7 @@ const Navbar = () => {
             <div className="hidden sm:flex items-center gap-8">
                 <NavLink to={'/'}>Home</NavLink>
                 <NavLink to={'/products'}>All Products</NavLink>
-                <NavLink to={'/contact'}>Contact</NavLink>
+                
                 
 
                 <div className="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full">
@@ -63,7 +63,7 @@ const Navbar = () => {
                     <img 
                         src={assets.cart_icon} 
                         alt=""
-                        className = { 'w-6 opacity-80' }
+                        className ='w-6 opacity-80' 
                     />
                     <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">{getCartCount()}</button>
                 </div>
