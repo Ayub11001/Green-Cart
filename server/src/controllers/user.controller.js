@@ -87,8 +87,8 @@ const loginUser = asyncHandler( async (req, res) => {
         throw new ApiError(401, 'Email or password is incorrect')
     }
 
-    const  {accessToken, refreshToken} = generateAccessAndRefreshToken(user?._id);
-    const loggedInUser = await User.findById(user?._id).select('-password -accessToken');
+    const  {accessToken, refreshToken} = await generateAccessAndRefreshToken(user?._id);
+    const loggedInUser = await User.findById(user?._id).select('-password -refreshToken');
 
     const options = {
         httpOnly: true, 
@@ -108,8 +108,26 @@ const loginUser = asyncHandler( async (req, res) => {
     )
 } )
 
+const isAuth = asyncHandler( async (req, res) => {
+    const user = req.user;
+    if(!user) {
+        throw new ApiError(400, "User is logged out")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200, 
+            user,
+            "User returned successfully"
+        )
+    )
+} )
+
 
 export {
     registerUser,
-    loginUser
+    loginUser,
+    isAuth
 };
