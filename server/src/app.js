@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { userRouter } from './routes/user.routes.js';
 import { sellerRouter } from './routes/seller.routes.js';
+import { productRouter } from './routes/products.routes.js'
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(express.static('public'))
 
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/seller', sellerRouter)
+app.use('/api/v1/product', productRouter)
 
 export { app };
