@@ -25,6 +25,6 @@ app.use('/api/v1/seller', sellerRouter);
 app.use('/api/v1/product', productRouter);
 app.use('/api/v1/cart', cartRouter);
 app.use('/api/v1/address', addressRouter);
-app.use('api/v1/order', orderRouter)
+app.use('/api/v1/order', orderRouter)
 
 export { app };
