@@ -8,11 +8,11 @@ import {
 
 const sellerRouter = Router()
 
-sellerRouter.post('/seller-login', sellerLogin)
+sellerRouter.post('/login', sellerLogin)
 
 import authSeller from "../middleware/authSeller.middleware.js"
 
-sellerRouter.get('/seller-auth', authSeller, sellerAuth)
-sellerRouter.get('/seller-logout', authSeller, sellerLogout)
+sellerRouter.get('/auth', authSeller, sellerAuth)
+sellerRouter.get('/logout', authSeller, sellerLogout)
 
 export {sellerRouter}

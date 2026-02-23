@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js"
 
 const addProduct = asyncHandler( async (req, res) => {
-    let productData = req.body;
+    let productData = JSON.parse(req.body.productData);
     const images = req.files
     if(!images) {
         throw new ApiError(
@@ -80,7 +80,7 @@ const getProductById = asyncHandler( async (req, res) => {
 
 const changeStock = asyncHandler( async (req, res) => {
     const {id, inStock} = req.body;
-    if(!(id && inStock)) {
+    if(!id && inStock === undefined) {
         throw new ApiError(
             400,
             'ID, stock are required fields'

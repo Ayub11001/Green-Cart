@@ -45,7 +45,7 @@ const orderSchema = mongoose.Schema(
 
     },
     {
-        timestamp: true
+        timestamps: true
     }
 )
 
