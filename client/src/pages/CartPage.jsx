@@ -14,6 +14,7 @@ const CartPage = () => {
         products,
         currency,
         cartItems,
+        setCartItems,
         removeFromCart,
         getCartCount,
         updateCartItem,
@@ -23,7 +24,34 @@ const CartPage = () => {
         user
     } = useAppContext();
 
-    const placeOrder = async () => {}
+    const placeOrder = async () => {
+        try {
+            if(!selectedAddress) {
+                return toast.error("Add an address");
+            }
+
+            if(paymentOptioins === 'COD') {
+                const {data} = await axios.post(
+                    '/api/v1/order/cod',
+                    {
+                        userId: user._id,
+                        items: cartArray.map(item => ({ product: item._id, quantity: item.quantity })),
+                        address: selectedAddress._id
+                    }, 
+                    { authRequired: true }
+                );
+                if(data.success) {
+                    toast.success(data.message);
+                    setCartItems({});
+                    navigate('/my-orders')
+                } else {
+                    toast.error(data.message);
+                }
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
 
     const getUserAddress = async () => {
         try {
@@ -229,7 +257,12 @@ const CartPage = () => {
                     </p>
                 </div>
 
-                <button className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition">
+                <button className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition"
+                onClick={
+                    () => {
+                        placeOrder();
+                    }
+                }>
                     {
                         paymentOptioins === 'COD' ? 'Place Order' : 'Proceed to Checkout'
                     }
