@@ -2,10 +2,9 @@ import { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { dummyProducts } from "../assets/assets";
 import toast from "react-hot-toast";
-import axios from 'axios'
+import axios from '../config/axios.config.js'
 
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL;
+
 
 const AppContext = createContext();
 
@@ -101,6 +100,45 @@ const AppContextProvider = ({ children }) => {
         () => {
             fetchProducts();
             fetchSellerStatus();
+        },
+        []
+    )
+
+    useEffect(
+        () => {
+            console.log('interceptor useEffect triggered')
+            let isRefreshing = false;
+            let refreshPromise = null;
+
+            const interceptor = axios.interceptors.response.use(
+                (response) => response,
+                async (error) => {
+                    console.log('interceptor triggerred!!');
+                    console.log(`Error: ${error}\nError message: ${error.message}`)
+                    const originalRequest = error.config;
+
+                    if(error.response?.status === 400 && !originalRequest._retry && originalRequest.authRequired) {
+                        originalRequest._retry = true;
+                        try {
+                            if(!isRefreshing) {
+                                isRefreshing = true;
+                                refreshPromise = axios.get('/api/v1/user/refresh-token')
+                                .finally(
+                                    () => {
+                                        isRefreshing = false;
+                                    }
+                                );
+                            }    
+                                await refreshPromise;
+                                return axios(originalRequest);
+                        } catch {
+                            setUser(null);
+                        }
+                    }
+                    return Promise.reject(error);
+                }
+            );
+            return () => axios.interceptors.response.eject(interceptor);
         },
         []
     )

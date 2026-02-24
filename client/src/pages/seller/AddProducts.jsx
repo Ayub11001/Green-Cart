@@ -19,7 +19,7 @@ const AddProducts = () => {
             event.preventDefault();
             const productData = {
                 name, 
-                description,
+                description: description.split('\n'),
                 price, 
                 offerPrice,
                 category

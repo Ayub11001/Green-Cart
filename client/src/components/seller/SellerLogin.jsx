@@ -19,7 +19,7 @@ const SellerLogin = () => {
                 setIsSeller(true);
                 navigate('/seller')
             } else {
-                toast.error(data.message)
+                toast.error(data.data.message)
             }
         } catch (error) {
             toast.error(error.message)
