@@ -1,13 +1,14 @@
 import  { React, useState, useEffect } from 'react'
 import { useAppContext } from '../context/AppContext.jsx';
 import { assets, dummyAddress } from '../assets/assets';
+import toast from 'react-hot-toast';
 
 const CartPage = () => {
     const [showAddress, setShowAddress] = useState(false)
     const [cartArray, setCartArray] = useState([])
-    const [selectedAddress, setSelectedAddress] = useState(dummyAddress[0])
+    const [selectedAddress, setSelectedAddress] = useState(null)
     const [paymentOptioins, setPaymentOptions] = useState('COD')
-    const [addresses , setAddresses] = useState(dummyAddress)
+    const [addresses , setAddresses] = useState([])
   
     const {
         products,
@@ -18,9 +19,27 @@ const CartPage = () => {
         updateCartItem,
         navigate,
         getCartAmount,
+        axios, 
+        user
     } = useAppContext();
 
     const placeOrder = async () => {}
+
+    const getUserAddress = async () => {
+        try {
+            const {data} = await axios.get('/api/v1/address/get', { authRequired: true });
+            if(data.success) {
+                setAddresses(data.data);
+                if(data.data.length > 0) {
+                    setSelectedAddress(data.data[0]);
+                }
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
 
     const getCart = () => {
         let tempArray = []
@@ -42,7 +61,16 @@ const CartPage = () => {
             }
         },
         [products, cartItems]
-    )
+    );
+
+    useEffect(
+        () => {
+            if(user) {
+                getUserAddress();
+            }
+        },
+        [user]
+    );
 
     return products.length > 0 && cartItems ? (
         <div className="flex flex-col md:flex-row py-16">
@@ -140,7 +168,7 @@ const CartPage = () => {
                                     ${selectedAddress.street},
                                     ${selectedAddress.city},
                                     ${selectedAddress.state},
-                                    ${selectedAddress.zipcode},
+                                    ${selectedAddress.zipCode},
                                     ${selectedAddress.country}
                                 ` :
                                 'No address selected'

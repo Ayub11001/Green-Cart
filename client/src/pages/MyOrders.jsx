@@ -1,6 +1,6 @@
 import {React, useEffect, useState} from 'react'
-import { useAppContext } from '../context/AppContext'
-import { assets, dummyOrders } from '../assets/assets'
+import { useAppContext } from '../context/AppContext.jsx'
+import { assets, dummyOrders } from '../assets/assets.js'
 
 const MyOrders = () => {
     const [myOrders, setMyOrders] = useState([])
@@ -11,7 +11,9 @@ const MyOrders = () => {
     }
 
     useEffect(
-        () => fetchMyOrders(),
+        () => {
+            fetchMyOrders()
+        },
         []
     )
 

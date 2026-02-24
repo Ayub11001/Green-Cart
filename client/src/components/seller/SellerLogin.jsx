@@ -19,10 +19,12 @@ const SellerLogin = () => {
                 setIsSeller(true);
                 navigate('/seller')
             } else {
-                toast.error(data.data.message)
+                toast.error(data.data.message);
+                setIsSeller(false);
             }
         } catch (error) {
             toast.error(error.message)
+            setIsSeller(false);
         }
         
     }

@@ -96,17 +96,31 @@ const AppContextProvider = ({ children }) => {
         }
     }
 
+    const fetchUserStatus = async () => {
+        try {
+            const { data } = await axios.get('/api/v1/user/auth', { authRequired: true });
+            if(data.success) {
+                setUser(data.data);
+                setCartItems(data.data.cartItems);
+            } else {
+                setUser(false);
+            }
+        } catch (error) {
+            setUser(false);
+        }
+    }
+
     useEffect(
         () => {
             fetchProducts();
             fetchSellerStatus();
+            fetchUserStatus();
         },
         []
-    )
+    );
 
     useEffect(
         () => {
-            console.log('interceptor useEffect triggered')
             let isRefreshing = false;
             let refreshPromise = null;
 
@@ -141,7 +155,30 @@ const AppContextProvider = ({ children }) => {
             return () => axios.interceptors.response.eject(interceptor);
         },
         []
-    )
+    );
+
+    useEffect(
+        () => {
+            const updateCart = async () => {
+                try {
+                    const { data } = await axios.post(
+                        '/api/v1/cart/update',
+                        { cartItems }, 
+                        { authRequired: true }
+                    );
+                    if(!data.success) {  
+                        toast.error(data.message);
+                    } 
+                } catch (error) {
+                    toast.error(error.message);
+                }
+            }
+            if(user) {
+                updateCart();
+            }
+        },
+        [cartItems]
+    );
 
     const value = {
         user,
