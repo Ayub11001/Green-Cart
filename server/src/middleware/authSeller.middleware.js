@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
 
 const authSeller = asyncHandler( async (req, res, next) => {
-    const sellerToken = req.cookies?.sellerToken || req.header("Authorization")?.replace("Bearer", "");
+    const sellerToken = req.cookies?.sellerToken || req.header("Authorization")?.replace("Bearer ", "");
     if(!sellerToken) {
         throw new ApiError(400, 'Seller Not Authorized')
     }
