@@ -7,6 +7,7 @@ import { productRouter } from './routes/products.routes.js';
 import { cartRouter } from './routes/cart.routes.js';
 import { addressRouter } from './routes/address.routes.js';
 import { orderRouter } from './routes/order.route.js';
+import recommendationRouter from './routes/recommendation.routes.js';
 
 const app = express();
 
@@ -26,5 +27,6 @@ app.use('/api/v1/product', productRouter);
 app.use('/api/v1/cart', cartRouter);
 app.use('/api/v1/address', addressRouter);
 app.use('/api/v1/order', orderRouter)
+app.use('/api/v1/recommendations', recommendationRouter);
 
 export { app };

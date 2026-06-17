@@ -2,6 +2,7 @@ import  { React, useState, useEffect } from 'react'
 import { useAppContext } from '../context/AppContext.jsx';
 import { assets, dummyAddress } from '../assets/assets';
 import toast from 'react-hot-toast';
+import ProductCard from '../components/ProductCard.jsx';
 
 const CartPage = () => {
     const [showAddress, setShowAddress] = useState(false)
@@ -9,6 +10,8 @@ const CartPage = () => {
     const [selectedAddress, setSelectedAddress] = useState(null)
     const [paymentOptioins, setPaymentOptions] = useState('COD')
     const [addresses , setAddresses] = useState([])
+    const [recommendedProducts, setRecommendedProducts] = useState([])
+    const [loadingRecommendations, setLoadingRecommendations] = useState(false)
   
     const {
         products,
@@ -20,8 +23,9 @@ const CartPage = () => {
         updateCartItem,
         navigate,
         getCartAmount,
-        axios, 
-        user
+        axios,
+        user,
+        addToCart
     } = useAppContext();
 
     const placeOrder = async () => {
@@ -47,6 +51,27 @@ const CartPage = () => {
                 } else {
                     toast.error(data.message);
                 }
+            } else {
+                const {data} = await axios.post(
+                    '/api/v1/order/stripe',
+                    {
+                        userId: user._id,
+                        items: cartArray.map(item => ({ product: item._id, quantity: item.quantity })),
+                        address: selectedAddress._id
+                    }, 
+                    { authRequired: true },
+                    {
+                        headers: {
+                            origin: window.location.origin
+                        }
+                    }
+                );
+
+                if(data.success) {
+                    window.location.replace(data.data.url)
+                } else {
+                    toast.error(data.message)
+                }
             }
         } catch (error) {
             toast.error(error.message);
@@ -66,6 +91,29 @@ const CartPage = () => {
             }
         } catch (error) {
             toast.error(error.message);
+        }
+    }
+
+    const fetchRecommendations = async () => {
+        try {
+            if (!user || !cartArray || cartArray.length === 0) return;
+
+            setLoadingRecommendations(true);
+            const cartItemIds = cartArray.map(item => item._id);
+
+            const { data } = await axios.post(
+                `/api/v1/recommendations/get/${user._id}`,
+                { cartItems: cartItemIds },
+                { authRequired: true }
+            );
+
+            if (data.success) {
+                setRecommendedProducts(data.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch recommendations:', error);
+        } finally {
+            setLoadingRecommendations(false);
         }
     }
 
@@ -100,7 +148,17 @@ const CartPage = () => {
         [user]
     );
 
+    useEffect(
+        () => {
+            if(user && cartArray.length > 0) {
+                fetchRecommendations();
+            }
+        },
+        [user, cartArray]
+    );
+
     return products.length > 0 && cartItems ? (
+        <>
         <div className="flex flex-col md:flex-row py-16">
             <div className='flex-1 max-w-4xl'>
                 <h1 className="text-3xl font-medium mb-6">
@@ -116,7 +174,7 @@ const CartPage = () => {
                 {cartArray.map((product, index) => (
                     <div key={index} className="grid grid-cols-[2fr_1fr_1fr] text-gray-500 items-center text-sm md:text-base font-medium pt-3">
                         <div className="flex items-center md:gap-6 gap-3">
-                            <div 
+                            <div
                             onClick={() => {
                                 navigate(`/products/${product.category.toLowerCase()}/${product._id}`)
                                 scrollTo(0, 0)
@@ -130,21 +188,21 @@ const CartPage = () => {
                                     <p>Weight: <span>{product.weight || "N/A"}</span></p>
                                     <div className='flex items-center'>
                                         <p>Qty:</p>
-                                        <select 
+                                        <select
                                         onChange={
                                             (e) => {updateCartItem(product._id, Number(e.target.value))}
                                         }
                                         value={cartItems[product._id]}
                                         className='outline-none'>
                                             {Array(
-                                                cartItems[product._id] > 9 ? 
-                                                cartItems[product._id] : 
+                                                cartItems[product._id] > 9 ?
+                                                cartItems[product._id] :
                                                 9
                                             ).fill('')
                                             .map(
                                                 (_, index) =>(
-                                                    <option 
-                                                    key={index} 
+                                                    <option
+                                                    key={index}
                                                     value={index + 1}
                                                     >
                                                         {index + 1}
@@ -157,30 +215,30 @@ const CartPage = () => {
                             </div>
                         </div>
                         <p className="text-center">{currency}{product.offerPrice * product.quantity}</p>
-                        <button 
+                        <button
                         onClick={() => removeFromCart(product._id)}
                         className="cursor-pointer mx-auto">
-                            <img 
+                            <img
                             className='inline-block w-6 h-6'
                             src={assets.remove_icon} alt="" />
                         </button>
                     </div>)
                 )}
 
-                <button 
+                <button
                 onClick={() => {
                         navigate('/products');
                         scrollTo(0, 0)
                 }}
                 className="group cursor-pointer flex items-center mt-8 gap-2 text-primary font-medium">
-                    <img 
+                    <img
                     className='group-hover:translate-x-1 transition'
                     src={assets.arrow_right_icon_colored} alt="" />
                     Continue Shopping
                 </button>
 
             </div>
-            
+
             {/* Order Summary Section */}
 
             <div className="max-w-[360px] w-full bg-gray-100/40 p-5 max-md:mt-16 border border-gray-300/70">
@@ -269,7 +327,29 @@ const CartPage = () => {
                 </button>
             </div>
         </div>
-            ) : null
+
+        {/* AI Recommendations Section - Full Width Below */}
+        {recommendedProducts.length > 0 && (
+            <div className="mt-12 px-4">
+                <h2 className="text-2xl font-medium mb-4 flex items-center gap-2">
+                    <span>Recommended for You</span>
+                    <span className="text-sm text-gray-500 font-normal">Powered by AI</span>
+                </h2>
+                <div className="flex gap-4 overflow-x-auto pb-4">
+                    {recommendedProducts.map((product) => (
+                        <ProductCard key={product._id} product={product} />
+                    ))}
+                </div>
+            </div>
+        )}
+
+        {loadingRecommendations && (
+            <div className="mt-12 text-center">
+                <p className="text-gray-500">Loading recommendations...</p>
+            </div>
+        )}
+        </>
+    ) : null
 }
       
 
