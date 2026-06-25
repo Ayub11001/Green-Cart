@@ -1,0 +1,20 @@
+services: 
+  clinet: 
+    build: ./clinet
+    depends_on:
+      - server
+    ports:
+      - "5173:5173"
+    networks:
+      - green_cart
+  
+  server: 
+    build: ./server
+    ports:
+      - "8000:8000"
+    networks:
+      - green_cart
+    
+networks:
+  green_cart:
+    driver: bridge
