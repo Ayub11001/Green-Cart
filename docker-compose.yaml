@@ -1,6 +1,8 @@
 services: 
-  clinet: 
-    build: ./clinet
+  client: 
+    build: ./client
+    env_file:
+      - ./client/.env
     depends_on:
       - server
     ports:
@@ -10,6 +12,8 @@ services:
   
   server: 
     build: ./server
+    env_file:
+      - ./server/.env
     ports:
       - "8000:8000"
     networks:
