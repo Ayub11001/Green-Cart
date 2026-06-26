@@ -4,7 +4,6 @@ import {asyncHandler} from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken"
 
 const authUser = asyncHandler( async (req, res, next) => {
-    console.log("Auth middleware hit:", req.method, req.originalUrl);
     const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
     if(!token) {
         throw new ApiError(401, 'Invalid Access token')
