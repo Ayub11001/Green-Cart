@@ -134,8 +134,15 @@ const getOrders = asyncHandler( async(req, res) => {
                 { isPaid: true }
             ]
         }
-    ).populate('items.product address')
-    .sort({createdAt: -1});
+    ).populate({
+        path: 'items.product',
+        populate: {
+            path: 'sellerId',
+            select: 'shopName shopLocation'
+        }
+    })
+    .populate('address')
+    .sort({ createdAt: -1 });
 
     return res
     .status(200)
@@ -150,12 +157,19 @@ const getOrders = asyncHandler( async(req, res) => {
 } );
 
 const getAllOrders = asyncHandler( async(req, res) => {
+    const sellerId = req.user._id;
+
+    const productIds = await Product.find({sellerId}).distinct("_id");
+
     const orders = await Order.find(
         {
             $or: [
                 { paymentType: "COD" },
                 { isPaid: true }
-            ]
+            ],
+            "items.product": {
+                $in: productIds,
+            }
         }
     ).populate('items.product address')
     .sort({createdAt: -1});

@@ -1,21 +1,16 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import jwt from "jsonwebtoken";
 
-const authSeller = asyncHandler( async (req, res, next) => {
-    const sellerToken = req.cookies?.sellerToken || req.header("Authorization")?.replace("Bearer ", "");
-    if(!sellerToken) {
-        throw new ApiError(400, 'Seller Not Authorized')
+const authSeller = asyncHandler(async (req, res, next) => {
+    if(!req.user) {
+        throw new ApiError(401, 'Not authenticated')
     }
 
-    const decodedSellerToken = jwt.verify(sellerToken, process.env.SELLER_TOKEN_SECRET)
-    if(decodedSellerToken?.email !== process.env.SELLER_EMAIL) {
-        throw new ApiError(
-            401,
-            'Unauthorized access'
-        )
+    if(req.user.role !== 'SELLER') {
+        throw new ApiError(403, 'Access denied. Sellers only.')
     }
+
     next();
-} )
+})
 
 export default authSeller;

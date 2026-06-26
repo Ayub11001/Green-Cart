@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+    registerSeller,
     sellerLogin,
     sellerAuth,
     sellerLogout
@@ -8,11 +9,13 @@ import {
 
 const sellerRouter = Router()
 
+sellerRouter.post('/register', registerSeller) 
 sellerRouter.post('/login', sellerLogin)
 
 import authSeller from "../middleware/authSeller.middleware.js"
+import authUser from "../middleware/authUser.middleware.js";
 
-sellerRouter.get('/auth', authSeller, sellerAuth)
-sellerRouter.get('/logout', authSeller, sellerLogout)
+sellerRouter.get('/auth',authUser ,authSeller, sellerAuth)
+sellerRouter.get('/logout',authUser, authSeller, sellerLogout)
 
 export {sellerRouter}

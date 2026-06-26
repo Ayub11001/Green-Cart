@@ -5,7 +5,15 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js"
 
 const addProduct = asyncHandler( async (req, res) => {
-    let productData = JSON.parse(req.body.productData);
+    // let productData = JSON.parse(req.body.productData);
+    const {
+        name,
+        description,
+        price,
+        offerPrice,
+        category,
+        inStock
+    } = req.body;
     const images = req.files
     if(!images) {
         throw new ApiError(
@@ -21,7 +29,16 @@ const addProduct = asyncHandler( async (req, res) => {
         })
     )
 
-    await Product.create({ ...productData, image: imagesUrl})
+    await Product.create({
+        name,
+        description: [description],
+        price: Number(price),
+        offerPrice: Number(offerPrice),
+        category,
+        inStock: inStock === "true",
+        image: imagesUrl,
+        sellerId: req.user._id
+    });
 
     return res
     .status(200)
@@ -33,7 +50,12 @@ const addProduct = asyncHandler( async (req, res) => {
 })
 
 const getProductList = asyncHandler( async (req, res) => {
-    const products = await Product.find({})
+    const products = await Product
+        .find({})
+        .populate(
+            "sellerId",
+            "shopName shopLocation"
+        )
     if(!products) {
         throw new ApiError(
             500,
@@ -62,7 +84,7 @@ const getProductById = asyncHandler( async (req, res) => {
     const product = await Product.findById(productId);
     if(!product) {
         throw new ApiError(
-            500,
+            404,
             "Product not found"
         )
     }
@@ -87,12 +109,18 @@ const changeStock = asyncHandler( async (req, res) => {
         )
     }
 
-    await Product.findByIdAndUpdate(
-        id,
+    const product = await Product.findOneAndUpdate(
+        {
+            _id: id,
+            sellerId: req.user._id,
+        },
         {
             $set: {inStock}
         }
     );
+    if(!product) {
+        throw new ApiError(404, 'Product not found or you do not own it')
+    }
 
     return res
     .status(200)
@@ -105,10 +133,16 @@ const changeStock = asyncHandler( async (req, res) => {
     )
 })
 
+const getSellerProducts = asyncHandler(async (req, res) => {
+    const products = await Product.find({ sellerId: req.user._id })
+    return res.status(200).json(new ApiResponse(200, products, 'Seller products fetched successfully'))
+})
+
 
 export {
     addProduct,
     getProductList,
     getProductById,
     changeStock,
+    getSellerProducts
 }

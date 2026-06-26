@@ -2,27 +2,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import { generateAccessAndRefreshToken } from "../utils/generateTokens.js";
 
-const generateAccessAndRefreshToken = async function(userId) {
-   try {
-     const user = await User.findById(userId)
-
-     const accessToken = user.generateAccessToken();
-     const refreshToken = user.generateRefreshToken();
-
-     user.refreshToken = refreshToken;
-
-     await user.save({validateBeforeSave: false});
-     
-     return {
-        accessToken,
-        refreshToken
-     }
-   } catch (error) {
-    throw new ApiError(500, 'Could not generate tokens')
-   }
-}
 
 const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password} = req.body;
@@ -44,7 +26,8 @@ const registerUser = asyncHandler(async (req, res) => {
         {
             name,
             email: email.toLowerCase(),
-            password
+            password,
+            role: "USER"
         }
     )
     if(!user) {
@@ -66,6 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
             {
                 email: user.email,
                 name: user.name,
+                role: user.role
             },
             'User registered and logged in successfully'
         )
@@ -78,7 +62,10 @@ const loginUser = asyncHandler( async (req, res) => {
         throw new ApiError(400, 'All fields are required')
     }
 
-    const user = await User.findOne({email})
+    const user = await User.findOne({
+        email, 
+        role: "USER"
+    })
     if(!user) {
         throw new ApiError(401, 'User does not exist')
     }

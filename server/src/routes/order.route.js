@@ -13,6 +13,6 @@ const orderRouter = Router();
 orderRouter.route('/cod').post(authUser, placeOrderCOD);
 orderRouter.route('/stripe').post(authUser, placeOrderStripe);
 orderRouter.route('/user').get(authUser, getOrders);
-orderRouter.route('/seller').get(authSeller, getAllOrders);
+orderRouter.route('/seller').get(authUser, authSeller, getAllOrders);
 
 export {orderRouter}

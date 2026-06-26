@@ -7,6 +7,17 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    role: {
+        type: String,
+        enum: ["USER", "SELLER"],
+        default: "USER"
+    },
+    shopName: {
+        type: String,
+    },
+    shopLocation: {
+        type: String,
+    },
     email: {
         type: String,
         required: true,
