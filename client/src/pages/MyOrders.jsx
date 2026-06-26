@@ -1,6 +1,5 @@
-import {React, useEffect, useState} from 'react'
-import { useAppContext } from '../context/AppContext.jsx'
-import { assets, dummyOrders } from '../assets/assets.js'
+import { useEffect, useState} from 'react';
+import { useAppContext } from '../context/AppContext.jsx';
 
 const MyOrders = () => {
     const [myOrders, setMyOrders] = useState([])
@@ -59,9 +58,19 @@ const MyOrders = () => {
                                         </div>
 
                                         <div className='ml-4'>
-                                            <h2 className='text-xl font-medium text-gray-800'>{item.product.name}</h2>
+                                            <h2 className='text-xl font-medium text-gray-800'>
+                                                {item.product.name}
+                                            </h2>
+
                                             <p>Category: {item.product.category}</p>
+
+                                            {item.product.sellerId && (
+                                                <p className='text-sm text-gray-500'>
+                                                    Sold by: {item.product.sellerId.shopName}
+                                                </p>
+                                            )}
                                         </div>
+
                                     </div>
 
                                     <div className='flex flex-col justify-cneter md:ml-8 mb-4 md:mb-0'>

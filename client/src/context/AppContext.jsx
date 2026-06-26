@@ -1,6 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { dummyProducts } from "../assets/assets";
 import toast from "react-hot-toast";
 import axios from '../config/axios.config.js'
 
@@ -17,6 +16,7 @@ const AppContextProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [cartItems, setCartItems] = useState({});
     const [searchQuery, setSearchQuery] = useState({});
+    const [authLoading, setAuthLoading] = useState(true);
 
     const currency = import.meta.env.VITE_CURRENCY || '₹';
 
@@ -82,38 +82,28 @@ const AppContextProvider = ({ children }) => {
         return totalAmount;
     }
 
-    const fetchSellerStatus = async () => {
-        try {
-            const { data } = await axios.get('/api/v1/seller/auth');
-            if(data.success) {
-                setIsSeller(true);
-            } else {
-                setIsSeller(false);
-                toast.error(data.message)
-            }
-        } catch (error) {
-            setIsSeller(false);
-        }
-    }
+
 
     const fetchUserStatus = async () => {
         try {
             const { data } = await axios.get('/api/v1/user/auth', { authRequired: true });
             if(data.success) {
                 setUser(data.data);
-                setCartItems(data.data.cartItems);
+                setCartItems(data.data.cartItems || {});
+                setIsSeller(data.data.role === "SELLER")
             } else {
                 setUser(false);
             }
         } catch (error) {
             setUser(false);
+        } finally {
+            setAuthLoading(false);
         }
     }
 
     useEffect(
         () => {
             fetchProducts();
-            fetchSellerStatus();
             fetchUserStatus();
         },
         []
@@ -147,6 +137,7 @@ const AppContextProvider = ({ children }) => {
                                 return axios(originalRequest);
                         } catch {
                             setUser(null);
+                            setIsSeller(false)
                         }
                     }
                     return Promise.reject(error);
@@ -200,7 +191,9 @@ const AppContextProvider = ({ children }) => {
         getCartAmount,
         axios,
         fetchProducts,
-        setCartItems
+        setCartItems,
+        authLoading,
+        setAuthLoading
     };
 
     return <AppContext.Provider value = {value}>

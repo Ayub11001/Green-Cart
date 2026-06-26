@@ -1,4 +1,3 @@
-import {useState} from "react";
 import { assets } from "../assets/assets.js";
 import { useAppContext } from "../context/AppContext.jsx";
 
@@ -22,8 +21,19 @@ const ProductCard = ({product}) => {
                 <img className="group-hover:scale-105 transition max-h-32 max-w-26 md:max-w-36 md:max-h-42 object-cover" src={product.image[0]} alt={product.name} />
             </div>
             <div className="text-gray-500/60 text-sm">
+
                 <p>{product.category}</p>
-                <p className="text-gray-700 font-medium text-lg truncate w-full">{product.name}</p>
+
+                {product.sellerId && (
+                    <p className="text-xs text-gray-500 truncate">
+                         {product.sellerId.shopName} • {product.sellerId.shopLocation}
+                    </p>
+                )}
+
+                <p className="text-gray-700 font-medium text-lg truncate w-full">
+                    {product.name}
+                </p>
+
                 <div className="flex items-center gap-0.5">
                     {Array(5).fill('').map((_, i) => (
                             <img src={

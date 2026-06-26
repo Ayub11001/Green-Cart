@@ -5,15 +5,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js"
 
 const addProduct = asyncHandler( async (req, res) => {
-    // let productData = JSON.parse(req.body.productData);
-    const {
-        name,
-        description,
-        price,
-        offerPrice,
-        category,
-        inStock
-    } = req.body;
+    let productData = JSON.parse(req.body.productData);
+
     const images = req.files
     if(!images) {
         throw new ApiError(
@@ -30,12 +23,7 @@ const addProduct = asyncHandler( async (req, res) => {
     )
 
     await Product.create({
-        name,
-        description: [description],
-        price: Number(price),
-        offerPrice: Number(offerPrice),
-        category,
-        inStock: inStock === "true",
+        ...productData,
         image: imagesUrl,
         sellerId: req.user._id
     });

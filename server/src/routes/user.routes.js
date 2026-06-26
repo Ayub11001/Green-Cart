@@ -18,6 +18,6 @@ import authUser from "../middleware/authUser.middleware.js";
 
 userRouter.get('/auth', authUser, isAuth);
 userRouter.get('/logout', authUser, logoutUser);
-userRouter.get('/refresh-token', authUser, refreshAccessToken)
+userRouter.get('/refresh-token', refreshAccessToken)
 
 export { userRouter };

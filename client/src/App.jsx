@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
-import {Route, Routes, useLocation} from 'react-router-dom';
+import {Navigate, Route, Routes, useLocation} from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Footer from './components/Footer.jsx';
 import { useAppContext } from './context/AppContext.jsx';
@@ -12,7 +12,7 @@ import ProductDetails from './pages/ProductDetails.jsx';
 import CartPage from './pages/CartPage.jsx';
 import AddAddressPage from './pages/AddAddressPage.jsx';
 import MyOrders from './pages/MyOrders.jsx';
-import SellerLogin from './components/seller/SellerLogin.jsx';
+// import SellerLogin from './components/seller/SellerLogin.jsx';
 import SellerLayout from './pages/seller/SellerLayout.jsx';
 import AddProducts from './pages/seller/AddProducts.jsx';
 import ProductList from './pages/seller/ProductList.jsx';
@@ -20,7 +20,11 @@ import Orders from './pages/seller/Orders.jsx';
 import Loading from './components/Loading.jsx';
 
 const App = () => {
-  const { showUserLogin, isSeller } = useAppContext();
+  const {
+    showUserLogin,
+    isSeller,
+    authLoading,
+  } = useAppContext();
   const isSellerPath = useLocation().pathname.includes('/seller');
   return (
     <div className='text-default min-h-screen text-gray-700 bg-white'>
@@ -39,10 +43,21 @@ const App = () => {
           <Route path='/my-orders' element = {<MyOrders/>}/>
           <Route path='/loader' element = {<Loading/>}/>
 
-          <Route path='/seller' element={isSeller ? <SellerLayout/> : <SellerLogin/>}>
-            <Route index element={isSeller ? <AddProducts/> : null}/>
-            <Route path='product-list' element={<ProductList/>}/>
-            <Route path='orders' element={<Orders/>}/>
+          <Route
+              path="/seller"
+              element={
+                  authLoading ? (
+                      <Loading />
+                  ) : isSeller ? (
+                      <SellerLayout />
+                  ) : (
+                      <Navigate to="/" replace />
+                  )
+              }
+          >
+              <Route index element={<AddProducts />} />
+              <Route path="product-list" element={<ProductList />} />
+              <Route path="orders" element={<Orders />} />
           </Route>
         </Routes>
       </div>
