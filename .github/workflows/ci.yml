@@ -1,40 +1,69 @@
 name: Green-Cart_CI
 
 on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
-    
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-    ci:
-        runs-on: ubuntu-latest
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        folder: [server, client]
+    defaults:
+      run:
+        working-directory: ${{ matrix.folder }}
+    steps:
+      - uses: actions/checkout@v4
 
-        steps: 
-            - name: Checkout code
-              uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ${{ matrix.folder }}/package-lock.json
 
-            - name: Create ENV files
-              env: 
-                SERVER_SECRETS: ${{secrets.SERVER_SECRETS}}
-                CLIENT_SECRETS: ${{secrets.CLINET_SECRETS}}
-              run: |
-                printf '%s\n' "$SERVER_SECRETS" > server/.env
-                printf '%s\n' "$CLIENT_SECRETS" > client/.env
+      - run: npm ci
+      - run: npm run lint
 
+  docker:
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Build Application
-              run: docker compose build
+      - name: Create ENV files
+        env:
+          SERVER_SECRETS: ${{ secrets.SERVER_SECRETS }}
+          CLIENT_SECRETS: ${{ secrets.CLINET_SECRETS }}  
+        run: |
+          printf '%s\n' "$SERVER_SECRETS" > server/.env
+          printf '%s\n' "$CLIENT_SECRETS" > client/.env
 
-            - name: Start Application
-              run: docker compose up -d
+      - name: Build images
+        run: docker compose build
 
-            - name: Check Containers
-              run: docker compose ps
+      - name: Start application
+        run: docker compose up -d --wait --wait-timeout 120
 
-            - name: Check Container logs
-              run: docker compose logs
+      - name: Container status and logs on failure
+        if: failure()
+        run: |
+          docker compose ps -a
+          docker compose logs --no-color
 
-            - name: Stop Application
-              if: always()
-              run: docker compose down
+      - name: Stop application
+        if: always()
+        run: docker compose down -v
