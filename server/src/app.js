@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(express.static('public'));
 
 
-app.get('/healthy', (_req, res) => {
+app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
