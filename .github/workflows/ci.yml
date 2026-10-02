@@ -19,8 +19,8 @@ jobs:
                 SERVER_SECRETS: ${{secrets.SERVER_SECRETS}}
                 CLIENT_SECRETS: ${{secrets.CLINET_SECRETS}}
               run: |
-                printf '%s\n' "SERVER_SECRETS" > server/.env
-                printf '%s\n' "CLINET_SECRETS" > client/.env
+                printf '%s\n' "$SERVER_SECRETS" > server/.env
+                printf '%s\n' "$CLINET_SECRETS" > client/.env
 
 
             - name: Build Application
