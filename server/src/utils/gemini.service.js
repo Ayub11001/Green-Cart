@@ -11,19 +11,31 @@ export const getProductRecommendations = async (cartItems, orderHistory, availab
 
         // Prepare cart items data
         const cartItemsText = cartItems.map(item =>
-            `- ${item.name} (Category: ${item.category}, Price: ${item.price})`
+            `- ${item.name}
+        Category: ${item.category}
+        Price: ${item.offerPrice}
+        Seller: ${item.sellerId?.shopName}
+        Location: ${item.sellerId?.shopLocation}`
         ).join('\n');
 
         // Prepare order history data
         const orderHistoryText = orderHistory.length > 0
             ? orderHistory.map(item =>
-                `- ${item.name} (Category: ${item.category})`
-              ).join('\n')
-            : 'No previous order history';
+                `- ${item.name}
+            Category: ${item.category}
+            Price: ${item.offerPrice}
+            Seller: ${item.sellerId?.shopName}
+            Location: ${item.sellerId?.shopLocation}`
+            ).join('\n')
+        : 'No previous order history';
 
         // Prepare available products catalog
         const productsText = availableProducts.map(product =>
-            `ID: ${product._id}, Name: ${product.name}, Category: ${product.category}, Price: ${product.offerPrice}, Description: ${product.description.join(', ')}`
+            `ID: ${product._id}, Name: ${product.name}, Category: ${product.category}, Price: ${product.offerPrice}, Description: ${Array.isArray(product.description)
+                ? product.description.join(", ")
+                : product.description},
+            Seller: ${product.sellerId?.shopName},
+            Location: ${product.sellerId?.shopLocation}`
         ).join('\n');
 
         // Build the prompt
@@ -51,7 +63,14 @@ Rules:
 - Do NOT recommend products already in the cart
 - Recommend only from the available products list
 - Return exactly 5-6 product IDs
-- Return valid MongoDB ObjectIDs from the available products`;
+- Return valid MongoDB ObjectIDs from the available products
+
+MULTIPLE SELLERS:
+- The same product may be sold by multiple sellers.
+- If two or more products are effectively the same (same or very similar name/category), prefer the one with the lowest offerPrice.
+- If prices are equal, prefer the seller that already has products in the user's cart.
+- Otherwise, choose the product that provides the best value.
+- Avoid recommending a more expensive version of the same product when a cheaper equivalent exists.`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;

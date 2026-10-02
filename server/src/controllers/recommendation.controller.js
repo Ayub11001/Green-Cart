@@ -15,11 +15,17 @@ export const getRecommendations = async (req, res) => {
         }
 
         // Fetch cart items details
-        const cartProducts = await Product.find({ _id: { $in: cartItems } });
+        const cartProducts = await Product.find({ _id: { $in: cartItems } }).populate("sellerId", "shopName shopLocation");
 
         // Fetch user's order history
         const orders = await Order.find({ userId })
-            .populate('items.product')
+            .populate({
+                path: "items.product",
+                populate: {
+                    path: "sellerId",
+                    select: "shopName shopLocation"
+                }
+            })
             .sort({ createdAt: -1 })
             .limit(10);
 
@@ -40,7 +46,10 @@ export const getRecommendations = async (req, res) => {
         const availableProducts = await Product.find({
             inStock: true,
             _id: { $nin: cartItems }
-        }).limit(50);
+        })
+        .populate("sellerId", "shopName shopLocation")
+        .limit(50);
+
 
         if (availableProducts.length === 0) {
             return res.status(200).json({
