@@ -1,4 +1,3 @@
-import React from 'react'
 import {assets} from '../assets/assets.js';
 import {Link} from 'react-router-dom';
 const MainBanner = () => {

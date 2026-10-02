@@ -1,4 +1,3 @@
-import React from 'react'
 import ProductCard from './ProductCard.jsx';
 import { useAppContext } from '../context/AppContext.jsx';
 

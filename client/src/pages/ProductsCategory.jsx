@@ -1,4 +1,3 @@
-import React from 'react'
 import { useAppContext } from '../context/AppContext.jsx';
 import { useParams } from 'react-router-dom';
 import { categories } from '../assets/assets.js';
@@ -6,7 +5,7 @@ import ProductCard from '../components/ProductCard.jsx';
 
 
 const ProductsCategory = () => {
-    const { products, navigate } = useAppContext();  
+    const { products } = useAppContext();  
     const { category } = useParams();
 
     const filteredProducts = products.filter(

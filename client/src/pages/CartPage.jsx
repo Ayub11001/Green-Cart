@@ -1,6 +1,6 @@
-import  { React, useState, useEffect } from 'react'
+import  { useState, useEffect } from 'react'
 import { useAppContext } from '../context/AppContext.jsx';
-import { assets, dummyAddress } from '../assets/assets';
+import { assets } from '../assets/assets';
 import toast from 'react-hot-toast';
 import ProductCard from '../components/ProductCard.jsx';
 
@@ -25,7 +25,6 @@ const CartPage = () => {
         getCartAmount,
         axios,
         user,
-        addToCart
     } = useAppContext();
 
     const placeOrder = async () => {

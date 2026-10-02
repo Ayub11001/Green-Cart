@@ -9,7 +9,6 @@ const Navbar = () => {
     const {
         user,
         setUser,
-        showUserLogin,
         setShowUserLogin,
         navigate,
         searchQuery,

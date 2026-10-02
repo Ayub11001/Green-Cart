@@ -89,6 +89,6 @@ MULTIPLE SELLERS:
         return validRecommendations.slice(0, 6);
     } catch (error) {
         console.error('Gemini AI Error:', error);
-        throw new Error('Failed to generate recommendations');
+        throw new Error('Failed to generate recommendations', { cause: error });
     }
 };

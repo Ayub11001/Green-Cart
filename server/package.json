@@ -7,7 +7,8 @@
   "scripts": {
     "server": "nodemon src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "lint": "eslint ."
   },
   "author": "Ayub Baig",
   "license": "ISC",
@@ -25,6 +26,9 @@
     "stripe": "^20.1.2"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.11.0",
+    "globals": "^17.13.0",
     "nodemon": "^3.1.11",
     "prettier": "^3.7.4"
   }

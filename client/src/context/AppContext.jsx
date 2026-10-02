@@ -94,7 +94,7 @@ const AppContextProvider = ({ children }) => {
             } else {
                 setUser(false);
             }
-        } catch (error) {
+        } catch {
             setUser(false);
         } finally {
             setAuthLoading(false);
