@@ -21,6 +21,11 @@ app.use(express.urlencoded({extended: true, limit: "16kb"}));
 app.use(cookieParser());
 app.use(express.static('public'));
 
+
+app.get('/healthy', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/seller', sellerRouter);
 app.use('/api/v1/product', productRouter);
