@@ -1,0 +1,5 @@
+# Bundled inside npm in the node:22-alpine base image; not used by the running app.
+# Fixed versions not yet shipped in npm releases. Revisit when the base image updates.
+CVE-2026-102276
+CVE-2026-102278
+CVE-2026-19534

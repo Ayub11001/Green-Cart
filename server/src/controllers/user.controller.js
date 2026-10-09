@@ -62,6 +62,10 @@ const loginUser = asyncHandler( async (req, res) => {
         throw new ApiError(400, 'All fields are required')
     }
 
+    if(typeof email !== "string" || typeof password !== "string") {
+        throw new ApiError(400, "All fields should be strings")
+    }
+
     const user = await User.findOne({
         email, 
         role: "USER"

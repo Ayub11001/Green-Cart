@@ -35,6 +35,29 @@ jobs:
 
       - run: npm ci
       - run: npm run lint
+  
+  trivy:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        folder: [server, client]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ${{ matrix.folder }} image
+        run: docker build -t green-cart-${{ matrix.folder }}:ci ./${{ matrix.folder }}
+
+      - name: Scan ${{ matrix.folder }} image
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: green-cart-${{ matrix.folder }}:ci
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 1    
+
+
 
   docker:
     needs: lint
@@ -55,7 +78,7 @@ jobs:
       - name: Build images
         run: docker compose build
 
-      - name: Start application
+      - name: Start application and run health check
         run: docker compose up -d --wait --wait-timeout 120
 
       - name: Container status and logs on failure
