@@ -60,7 +60,7 @@ jobs:
 
 
   docker:
-    needs: lint
+    needs: [lint, trivy]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
