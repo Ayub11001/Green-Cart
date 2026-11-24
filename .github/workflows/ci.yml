@@ -57,8 +57,6 @@ jobs:
           ignore-unfixed: true
           exit-code: 1    
 
-
-
   docker:
     needs: [lint, trivy]
     runs-on: ubuntu-latest
